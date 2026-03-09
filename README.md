@@ -11,6 +11,24 @@
 - Reliable real-time updates  
 - Useful data visualization focus
 
+## v2 Prototype (D3 Dashboard)
+
+The v2 prototype replaces the v1 cat avatar with a small, D3-powered dashboard that shows real metrics instead of decorative animation.
+
+**Why it’s better than the cat avatar**
+- Uses real data (CPU, memory, disk, load, optional service checks)
+- Compact corner widget instead of a screen-hogging avatar
+- Polling-based updates with a clear offline state
+
+**Try it**
+```bash
+python3 prototype/server.py
+```
+
+Then open:
+- `http://127.0.0.1:8765/` for live metrics
+- `http://127.0.0.1:8765/demo.html` for demo mode
+
 ## Development
 
 Features are developed as branches, not separate repositories.

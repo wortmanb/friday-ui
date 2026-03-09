@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Friday UI • D3 Dashboard Prototype (Demo)</title>
+    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="dock" id="dashboard" data-compact="false">
+      <header class="dock__header">
+        <div>
+          <div class="dock__title">Friday</div>
+          <div class="dock__subtitle">Demo Mode</div>
+        </div>
+        <div class="dock__controls">
+          <button class="pill" id="toggle-size" type="button">Compact</button>
+          <button class="pill" id="toggle-demo" type="button">Live</button>
+        </div>
+      </header>
+
+      <section class="grid">
+        <article class="card">
+          <div class="card__title">CPU</div>
+          <div class="card__value" id="cpu-value">--</div>
+          <svg id="cpu-spark" class="spark"></svg>
+        </article>
+
+        <article class="card">
+          <div class="card__title">Memory</div>
+          <div class="card__value" id="mem-value">--</div>
+          <svg id="mem-spark" class="spark"></svg>
+        </article>
+
+        <article class="card">
+          <div class="card__title">Disk</div>
+          <div class="card__value" id="disk-value">--</div>
+          <svg id="disk-donut" class="donut"></svg>
+        </article>
+
+        <article class="card">
+          <div class="card__title">Load</div>
+          <div class="card__value" id="load-value">--</div>
+          <svg id="load-bars" class="bars"></svg>
+        </article>
+      </section>
+
+      <section class="service" id="service-block">
+        <div class="service__header">
+          <span>Services</span>
+          <span class="service__meta" id="service-meta">Demo</span>
+        </div>
+        <ul class="service__list" id="service-list"></ul>
+      </section>
+
+      <footer class="dock__footer">
+        <div class="status" id="status-indicator">
+          <span class="status__dot"></span>
+          <span id="status-text">Demo feed</span>
+        </div>
+        <div class="timestamp" id="timestamp">--</div>
+      </footer>
+    </main>
+
+    <script>
+      window.DASHBOARD_DEMO = true;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>
