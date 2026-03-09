@@ -180,10 +180,10 @@ body::before {
 
 /* Mini-compact mode (~50% size reduction) */
 .dock[data-compact="mini"] {
-  width: min(220px, 100vw);
-  padding: calc(var(--spacing) * 1.2);
-  gap: calc(var(--spacing));
-  font-size: 0.85rem;
+  width: min(210px, 100vw);
+  padding: calc(var(--spacing) * 1);
+  gap: calc(var(--spacing) * 0.75);
+  font-size: 0.75rem;
 }
 
 .dock[data-compact="mini"] .grid {
@@ -192,68 +192,81 @@ body::before {
 }
 
 .dock[data-compact="mini"] .dock__header {
-  padding-bottom: calc(var(--spacing));
+  padding-bottom: calc(var(--spacing) * 0.75);
 }
 
 .dock[data-compact="mini"] .dock__title {
-  font-size: 1.3rem;
-}
-
-.dock[data-compact="mini"] .dock__subtitle {
-  font-size: 0.65rem;
-}
-
-.dock[data-compact="mini"] .activity {
-  padding: calc(var(--spacing) * 1.2);
-}
-
-.dock[data-compact="mini"] .activity__state {
   font-size: 1.1rem;
 }
 
+.dock[data-compact="mini"] .dock__subtitle {
+  font-size: 0.55rem;
+}
+
+.dock[data-compact="mini"] .activity {
+  padding: calc(var(--spacing));
+}
+
+.dock[data-compact="mini"] .activity__state {
+  font-size: 0.95rem;
+}
+
 .dock[data-compact="mini"] .activity__description {
-  font-size: 0.65rem;
+  font-size: 0.55rem;
 }
 
 .dock[data-compact="mini"] .card {
-  padding: calc(var(--spacing));
-  gap: calc(var(--spacing) * 0.6);
+  padding: calc(var(--spacing) * 0.75);
+  gap: calc(var(--spacing) * 0.5);
 }
 
 .dock[data-compact="mini"] .card__title {
-  font-size: 0.6rem;
+  font-size: 0.5rem;
 }
 
 .dock[data-compact="mini"] .card__value {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
 }
 
 .dock[data-compact="mini"] .service__header {
-  font-size: 0.7rem;
-  margin-bottom: calc(var(--spacing) * 0.8);
+  font-size: 0.55rem;
+  margin-bottom: calc(var(--spacing) * 0.6);
 }
 
 .dock[data-compact="mini"] .service__list {
-  gap: calc(var(--spacing) * 0.6);
+  gap: calc(var(--spacing) * 0.5);
 }
 
 .dock[data-compact="mini"] .service__item {
-  font-size: 0.65rem;
-  padding: calc(var(--spacing) * 0.6) calc(var(--spacing));
+  font-size: 0.5rem;
+  padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 0.75);
 }
 
 .dock[data-compact="mini"] .dock__footer {
-  padding-top: calc(var(--spacing));
+  padding-top: calc(var(--spacing) * 0.75);
 }
 
 .dock[data-compact="mini"] .status, 
 .dock[data-compact="mini"] .timestamp {
-  font-size: 0.6rem;
+  font-size: 0.5rem;
 }
 
 .dock[data-compact="mini"] .pill {
-  font-size: 0.6rem;
-  padding: calc(var(--spacing) * 0.4) calc(var(--spacing) * 0.8);
+  font-size: 0.5rem;
+  padding: calc(var(--spacing) * 0.3) calc(var(--spacing) * 0.6);
+}
+
+/* Scale down charts and visualizations in mini mode */
+.dock[data-compact="mini"] .spark,
+.dock[data-compact="mini"] .donut,
+.dock[data-compact="mini"] .bars {
+  height: 20px;
+  width: 100%;
+}
+
+.dock[data-compact="mini"] .activity__indicator {
+  width: 6px;
+  height: 6px;
 }
 
 /* Header */
