@@ -291,9 +291,35 @@ class DashboardHandler(SimpleHTTPRequestHandler):
 
 def activity_monitor():
     """Background thread to monitor Friday activity state changes."""
+    demo_states = [
+        {"state": "IDLE", "description": "Monitoring quietly", "duration": 8},
+        {"state": "THINKING", "description": "Processing your request", "duration": 5},
+        {"state": "WORKING", "description": "Executing tasks", "duration": 6},
+        {"state": "CODING", "description": "Writing code", "duration": 7},
+        {"state": "ALERT", "description": "Attention needed", "duration": 3},
+        {"state": "SPEAKING", "description": "Voice output active", "duration": 4},
+    ]
+    demo_index = 0
+    demo_timer = 0
+    
     while True:
         try:
-            current_state = BROADCASTER.get_current_state()
+            # Check for real state file first
+            if STATE_FILE.exists():
+                current_state = BROADCASTER.get_current_state()
+            else:
+                # Use demo cycling when no real state file exists
+                if demo_timer <= 0:
+                    demo_index = (demo_index + 1) % len(demo_states)
+                    demo_timer = demo_states[demo_index]["duration"]
+                
+                current_state = {
+                    "state": demo_states[demo_index]["state"],
+                    "description": demo_states[demo_index]["description"],
+                    "timestamp": time.time()
+                }
+                demo_timer -= 1
+            
             BROADCASTER.broadcast(current_state)
             time.sleep(1)  # Check every second
         except Exception as e:
