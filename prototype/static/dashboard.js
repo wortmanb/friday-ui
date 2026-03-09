@@ -374,13 +374,29 @@ const tick = async () => {
 const init = () => {
   if (elements.toggleSize) {
     elements.toggleSize.addEventListener("click", () => {
-      const compact = document
-        .getElementById("dashboard")
-        .getAttribute("data-compact")
-        .toLowerCase();
-      const next = compact !== "true";
-      document.getElementById("dashboard").setAttribute("data-compact", next);
-      elements.toggleSize.textContent = next ? "Expand" : "Compact";
+      const dashboard = document.getElementById("dashboard");
+      const current = dashboard.getAttribute("data-compact");
+      
+      let next, buttonText;
+      switch(current) {
+        case "false":
+        case null:
+          next = "true";
+          buttonText = "Mini";
+          break;
+        case "true":
+          next = "ultra";
+          buttonText = "Expand";
+          break;
+        case "ultra":
+        default:
+          next = "false";
+          buttonText = "Compact";
+          break;
+      }
+      
+      dashboard.setAttribute("data-compact", next);
+      elements.toggleSize.textContent = buttonText;
       setTimeout(() => tick(), 0);
     });
   }

@@ -89,7 +89,9 @@ body::before {
 
 /* Main Dashboard Container */
 .dock {
-  width: min(500px, 100%);
+  width: min(420px, 100vw);
+  min-width: 320px;
+  max-width: 95vw;
   background: var(--bg-overlay);
   border: 1px solid rgba(0, 212, 255, 0.2);
   border-radius: var(--radius-lg);
@@ -102,6 +104,7 @@ body::before {
   gap: calc(var(--spacing) * 2);
   position: relative;
   overflow: hidden;
+  resize: horizontal;
 }
 
 .dock::before {
@@ -116,7 +119,36 @@ body::before {
 }
 
 .dock[data-compact="true"] {
-  width: min(400px, 100%);
+  width: min(320px, 100vw);
+  max-width: 90vw;
+}
+
+/* Ultra-compact mode */
+.dock[data-compact="ultra"] {
+  width: min(280px, 100vw);
+  padding: calc(var(--spacing) * 2);
+  gap: calc(var(--spacing) * 1.5);
+}
+
+.dock[data-compact="ultra"] .grid {
+  grid-template-columns: 1fr;
+  gap: calc(var(--spacing) * 1.5);
+}
+
+.dock[data-compact="ultra"] .dock__header {
+  padding-bottom: calc(var(--spacing) * 1.5);
+}
+
+.dock[data-compact="ultra"] .activity {
+  padding: calc(var(--spacing) * 2);
+}
+
+.dock[data-compact="ultra"] .activity__state {
+  font-size: 1.4rem;
+}
+
+.dock[data-compact="ultra"] .card {
+  padding: calc(var(--spacing) * 1.5);
 }
 
 /* Header */
@@ -471,7 +503,7 @@ body::before {
 }
 
 /* Responsive Design */
-@media (max-width: 720px) {
+@media (max-width: 600px) {
   body {
     padding: calc(var(--spacing) * 2);
     justify-content: center;
@@ -479,6 +511,7 @@ body::before {
 
   .dock {
     width: 100%;
+    min-width: 280px;
   }
 
   .grid {
@@ -489,6 +522,30 @@ body::before {
     flex-direction: column;
     gap: calc(var(--spacing) * 2);
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 400px) {
+  body {
+    padding: calc(var(--spacing));
+  }
+  
+  .dock {
+    padding: calc(var(--spacing) * 2);
+    gap: calc(var(--spacing) * 1.5);
+    border-radius: var(--radius-md);
+  }
+  
+  .activity {
+    padding: calc(var(--spacing) * 2);
+  }
+  
+  .activity__state {
+    font-size: 1.4rem;
+  }
+  
+  .card {
+    padding: calc(var(--spacing) * 1.5);
   }
 }
 
