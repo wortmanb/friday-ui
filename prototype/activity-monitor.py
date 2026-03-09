@@ -28,9 +28,9 @@ SESSIONS_FILE = Path.home() / ".openclaw/agents/main/sessions/sessions.json"
 LOG_DIR = Path("/tmp/openclaw")
 
 # Timing thresholds (seconds)
-THINKING_THRESHOLD = 5    # Recent activity = THINKING
-WORKING_THRESHOLD = 30    # Activity within this = WORKING
-IDLE_THRESHOLD = 60       # No activity for this long = IDLE
+THINKING_THRESHOLD = 10   # Very recent activity = THINKING
+WORKING_THRESHOLD = 60    # Activity within this = WORKING  
+IDLE_THRESHOLD = 90       # No activity for this long = IDLE
 POLL_INTERVAL = 2         # How often to check
 
 
@@ -108,7 +108,7 @@ def check_openclaw_process_active():
         )
         if result.returncode == 0 and result.stdout.strip():
             cpu = float(result.stdout.strip())
-            return cpu > 1.0  # More than 1% CPU = active
+            return cpu > 5.0  # More than 5% CPU = active (gateway idles at ~2%)
     except (subprocess.TimeoutExpired, ValueError):
         pass
     return False
