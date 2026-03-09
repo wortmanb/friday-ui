@@ -382,13 +382,17 @@ const init = () => {
         case "false":
         case null:
           next = "true";
-          buttonText = "Mini";
+          buttonText = "Ultra";
           break;
         case "true":
           next = "ultra";
-          buttonText = "Expand";
+          buttonText = "Mini";
           break;
         case "ultra":
+          next = "mini";
+          buttonText = "Expand";
+          break;
+        case "mini":
         default:
           next = "false";
           buttonText = "Compact";

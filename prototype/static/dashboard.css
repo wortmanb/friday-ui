@@ -178,6 +178,84 @@ body::before {
   padding: calc(var(--spacing) * 1.5);
 }
 
+/* Mini-compact mode (~50% size reduction) */
+.dock[data-compact="mini"] {
+  width: min(220px, 100vw);
+  padding: calc(var(--spacing) * 1.2);
+  gap: calc(var(--spacing));
+  font-size: 0.85rem;
+}
+
+.dock[data-compact="mini"] .grid {
+  grid-template-columns: 1fr;
+  gap: calc(var(--spacing));
+}
+
+.dock[data-compact="mini"] .dock__header {
+  padding-bottom: calc(var(--spacing));
+}
+
+.dock[data-compact="mini"] .dock__title {
+  font-size: 1.3rem;
+}
+
+.dock[data-compact="mini"] .dock__subtitle {
+  font-size: 0.65rem;
+}
+
+.dock[data-compact="mini"] .activity {
+  padding: calc(var(--spacing) * 1.2);
+}
+
+.dock[data-compact="mini"] .activity__state {
+  font-size: 1.1rem;
+}
+
+.dock[data-compact="mini"] .activity__description {
+  font-size: 0.65rem;
+}
+
+.dock[data-compact="mini"] .card {
+  padding: calc(var(--spacing));
+  gap: calc(var(--spacing) * 0.6);
+}
+
+.dock[data-compact="mini"] .card__title {
+  font-size: 0.6rem;
+}
+
+.dock[data-compact="mini"] .card__value {
+  font-size: 0.9rem;
+}
+
+.dock[data-compact="mini"] .service__header {
+  font-size: 0.7rem;
+  margin-bottom: calc(var(--spacing) * 0.8);
+}
+
+.dock[data-compact="mini"] .service__list {
+  gap: calc(var(--spacing) * 0.6);
+}
+
+.dock[data-compact="mini"] .service__item {
+  font-size: 0.65rem;
+  padding: calc(var(--spacing) * 0.6) calc(var(--spacing));
+}
+
+.dock[data-compact="mini"] .dock__footer {
+  padding-top: calc(var(--spacing));
+}
+
+.dock[data-compact="mini"] .status, 
+.dock[data-compact="mini"] .timestamp {
+  font-size: 0.6rem;
+}
+
+.dock[data-compact="mini"] .pill {
+  font-size: 0.6rem;
+  padding: calc(var(--spacing) * 0.4) calc(var(--spacing) * 0.8);
+}
+
 /* Header */
 .dock__header {
   display: flex;
