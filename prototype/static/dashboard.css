@@ -85,6 +85,78 @@ body {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
+.activity {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px;
+  border: 1px solid rgba(20, 12, 4, 0.08);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.activity__state {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.activity__description {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.activity__indicator {
+  width: 100%;
+  height: 6px;
+  background: rgba(240, 139, 62, 0.1);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.activity__indicator::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.activity[data-state="thinking"] .activity__indicator::after {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.activity[data-state="working"] .activity__indicator::after {
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+.activity[data-state="alert"] .activity__state {
+  color: #c94b3f;
+}
+
+.activity[data-state="alert"] .activity__indicator {
+  background: rgba(201, 75, 63, 0.1);
+}
+
+.activity[data-state="alert"] .activity__indicator::after {
+  background: linear-gradient(90deg, transparent, #c94b3f, transparent);
+  animation: pulse 0.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

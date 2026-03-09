@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Minimal dashboard backend for Friday UI prototype.
+"""Dashboard backend for Friday UI with SSE activity streaming.
 
 - Serves static files from ./static
 - Provides /api/metrics JSON endpoint
+- Provides /api/activity SSE stream for real-time Friday activity
 
 Standard library only.
 """
@@ -16,10 +17,69 @@ from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from shutil import disk_usage
+import threading
+import queue
 
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
+STATE_FILE = Path.home() / ".friday-activity-state"
+
+
+class ActivityBroadcaster:
+    """Manages SSE connections for Friday activity state."""
+    
+    def __init__(self):
+        self.clients = []
+        self.last_state = None
+        self.lock = threading.Lock()
+        
+    def add_client(self, client_queue):
+        with self.lock:
+            self.clients.append(client_queue)
+            
+    def remove_client(self, client_queue):
+        with self.lock:
+            if client_queue in self.clients:
+                self.clients.remove(client_queue)
+                
+    def broadcast(self, state):
+        with self.lock:
+            if state == self.last_state:
+                return
+            self.last_state = state
+            
+            # Send to all connected clients
+            dead_clients = []
+            for client_queue in self.clients:
+                try:
+                    client_queue.put_nowait(state)
+                except queue.Full:
+                    dead_clients.append(client_queue)
+                    
+            # Remove dead clients
+            for client_queue in dead_clients:
+                self.clients.remove(client_queue)
+                
+    def get_current_state(self):
+        """Check Friday's current activity state."""
+        try:
+            if STATE_FILE.exists():
+                with open(STATE_FILE, 'r') as f:
+                    data = json.load(f)
+                    return data
+        except (json.JSONDecodeError, IOError):
+            pass
+            
+        # Default state
+        return {
+            "state": "IDLE",
+            "description": "Monitoring quietly",
+            "timestamp": time.time()
+        }
+
+
+BROADCASTER = ActivityBroadcaster()
 
 
 class MetricsCollector:
@@ -172,14 +232,86 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(data)
             return
+            
+        if self.path.startswith("/api/activity"):
+            self._handle_sse_activity()
+            return
+            
         return super().do_GET()
+        
+    def _handle_sse_activity(self):
+        """Handle SSE connection for Friday activity stream."""
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Connection", "keep-alive")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        
+        client_queue = queue.Queue(maxsize=10)
+        BROADCASTER.add_client(client_queue)
+        
+        try:
+            # Send current state immediately
+            current_state = BROADCASTER.get_current_state()
+            self._send_sse_message(current_state)
+            
+            # Stream updates
+            while True:
+                try:
+                    state = client_queue.get(timeout=30)  # 30s timeout
+                    self._send_sse_message(state)
+                except queue.Empty:
+                    # Send heartbeat to keep connection alive
+                    self._send_sse_heartbeat()
+                    
+        except (ConnectionResetError, BrokenPipeError):
+            pass
+        finally:
+            BROADCASTER.remove_client(client_queue)
+            
+    def _send_sse_message(self, state):
+        """Send SSE message with Friday activity state."""
+        try:
+            data = json.dumps(state)
+            message = f"data: {data}\n\n"
+            self.wfile.write(message.encode('utf-8'))
+            self.wfile.flush()
+        except (ConnectionResetError, BrokenPipeError):
+            raise
+            
+    def _send_sse_heartbeat(self):
+        """Send SSE heartbeat to keep connection alive."""
+        try:
+            self.wfile.write(b": heartbeat\n\n")
+            self.wfile.flush()
+        except (ConnectionResetError, BrokenPipeError):
+            raise
+
+
+def activity_monitor():
+    """Background thread to monitor Friday activity state changes."""
+    while True:
+        try:
+            current_state = BROADCASTER.get_current_state()
+            BROADCASTER.broadcast(current_state)
+            time.sleep(1)  # Check every second
+        except Exception as e:
+            print(f"Activity monitor error: {e}")
+            time.sleep(5)
 
 
 def main():
     host = os.getenv("FRIDAY_HOST", "127.0.0.1")
     port = int(os.getenv("FRIDAY_PORT", "8765"))
+    
+    # Start activity monitoring thread
+    monitor_thread = threading.Thread(target=activity_monitor, daemon=True)
+    monitor_thread.start()
+    
     server = ThreadingHTTPServer((host, port), DashboardHandler)
     print(f"Friday UI prototype running on http://{host}:{port}")
+    print("SSE activity stream available at /api/activity")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

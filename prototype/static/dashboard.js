@@ -2,6 +2,7 @@
 
 const DEMO = Boolean(window.DASHBOARD_DEMO);
 const API_URL = "/api/metrics";
+const ACTIVITY_URL = "/api/activity";
 const POLL_INTERVAL = 5000;
 const MAX_POINTS = 30;
 
@@ -28,6 +29,10 @@ const elements = {
   serviceBlock: document.getElementById("service-block"),
   toggleSize: document.getElementById("toggle-size"),
   toggleDemo: document.getElementById("toggle-demo"),
+  fridayState: document.getElementById("friday-state"),
+  fridayDescription: document.getElementById("friday-description"),
+  fridayIndicator: document.getElementById("friday-indicator"),
+  activitySection: document.getElementById("activity-section"),
 };
 
 const formatPercent = (value) => `${Math.round(value * 100)}%`;
@@ -245,6 +250,48 @@ const fetchMetrics = async () => {
   return response.json();
 };
 
+const updateFridayActivity = (activityData) => {
+  const { state, description, timestamp } = activityData;
+  
+  elements.fridayState.textContent = state;
+  elements.fridayDescription.textContent = description;
+  elements.activitySection.setAttribute('data-state', state.toLowerCase());
+  
+  // Update timestamp if available
+  if (timestamp) {
+    const timeStr = new Date(timestamp * 1000).toLocaleTimeString();
+    console.log(`Friday state: ${state} at ${timeStr}`);
+  }
+};
+
+const connectActivitySSE = () => {
+  if (DEMO) {
+    return; // Skip SSE in demo mode
+  }
+  
+  const eventSource = new EventSource(ACTIVITY_URL);
+  
+  eventSource.onmessage = (event) => {
+    try {
+      const activityData = JSON.parse(event.data);
+      updateFridayActivity(activityData);
+    } catch (error) {
+      console.error('Error parsing activity SSE data:', error);
+    }
+  };
+  
+  eventSource.onerror = (error) => {
+    console.error('SSE connection error:', error);
+    // Automatically reconnect after 5 seconds
+    setTimeout(() => {
+      eventSource.close();
+      connectActivitySSE();
+    }, 5000);
+  };
+  
+  return eventSource;
+};
+
 const tick = async () => {
   try {
     const data = await fetchMetrics();
@@ -278,6 +325,9 @@ const init = () => {
       }
     });
   }
+
+  // Start SSE connection for Friday activity
+  connectActivitySSE();
 
   tick();
   setInterval(tick, POLL_INTERVAL);
