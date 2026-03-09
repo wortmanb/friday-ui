@@ -68,22 +68,40 @@ const updateSparkline = (selector, data, color) => {
     .y((d) => y(d))
     .curve(d3.curveCatmullRom.alpha(0.6));
 
+  // Add glow effect
+  const defs = svg.append("defs");
+  const filter = defs.append("filter").attr("id", `glow-${selector.replace('#', '')}`);
+  filter.append("feGaussianBlur").attr("stdDeviation", "3").attr("result", "coloredBlur");
+  const feMerge = filter.append("feMerge");
+  feMerge.append("feMergeNode").attr("in", "coloredBlur");
+  feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+
+  // Fill area
+  svg
+    .append("path")
+    .attr("d", `${line(data)} L ${width},${height} L 0,${height} Z`)
+    .attr("fill", color)
+    .attr("opacity", 0.15);
+
+  // Main line with glow
   svg
     .append("path")
     .attr("d", line(data))
     .attr("fill", "none")
     .attr("stroke", color)
-    .attr("stroke-width", 2.2);
+    .attr("stroke-width", 2.5)
+    .attr("filter", `url(#glow-${selector.replace('#', '')})`);
 
-  svg
-    .append("path")
-    .attr("d", line(data.concat([data[data.length - 1]])))
+  // Data points
+  svg.selectAll(".dot")
+    .data(data)
+    .enter().append("circle")
+    .attr("class", "dot")
+    .attr("cx", (d, i) => x(i))
+    .attr("cy", (d) => y(d))
+    .attr("r", 2)
     .attr("fill", color)
-    .attr("opacity", 0.12)
-    .attr(
-      "d",
-      `${line(data)} L ${width},${height} L 0,${height} Z`
-    );
+    .attr("opacity", 0.8);
 };
 
 const updateDonut = (selector, value, color) => {
@@ -96,17 +114,40 @@ const updateDonut = (selector, value, color) => {
     .append("g")
     .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-  const arc = d3.arc().innerRadius(radius * 0.6).outerRadius(radius);
+  const arc = d3.arc().innerRadius(radius * 0.65).outerRadius(radius);
 
+  // Add glow effect
+  const defs = svg.append("defs");
+  const filter = defs.append("filter").attr("id", `donut-glow-${selector.replace('#', '')}`);
+  filter.append("feGaussianBlur").attr("stdDeviation", "2").attr("result", "coloredBlur");
+  const feMerge = filter.append("feMerge");
+  feMerge.append("feMergeNode").attr("in", "coloredBlur");
+  feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+
+  // Background ring
   g.append("path")
     .datum({ startAngle: 0, endAngle: 2 * Math.PI })
     .attr("d", arc)
-    .attr("fill", "#efe9e1");
+    .attr("fill", "rgba(255, 255, 255, 0.1)")
+    .attr("stroke", "rgba(255, 255, 255, 0.2)")
+    .attr("stroke-width", 1);
 
+  // Value ring with glow
   g.append("path")
     .datum({ startAngle: 0, endAngle: 2 * Math.PI * value })
     .attr("d", arc)
-    .attr("fill", color);
+    .attr("fill", color)
+    .attr("filter", `url(#donut-glow-${selector.replace('#', '')})`)
+    .attr("opacity", 0.9);
+
+  // Center text
+  g.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dy", "0.35em")
+    .attr("font-family", "JetBrains Mono, monospace")
+    .attr("font-size", "12px")
+    .attr("fill", color)
+    .text(`${Math.round(value * 100)}%`);
 };
 
 const updateBars = (selector, values, color) => {
@@ -114,8 +155,30 @@ const updateBars = (selector, values, color) => {
   const svg = d3.select(selector);
   svg.selectAll("*").remove();
 
-  const x = d3.scaleBand().domain([0, 1, 2]).range([0, width]).padding(0.3);
+  const x = d3.scaleBand().domain([0, 1, 2]).range([0, width]).padding(0.4);
   const y = d3.scaleLinear().domain([0, Math.max(...values, 1)]).range([height, 0]);
+
+  // Add glow effect
+  const defs = svg.append("defs");
+  const filter = defs.append("filter").attr("id", `bars-glow-${selector.replace('#', '')}`);
+  filter.append("feGaussianBlur").attr("stdDeviation", "2").attr("result", "coloredBlur");
+  const feMerge = filter.append("feMerge");
+  feMerge.append("feMergeNode").attr("in", "coloredBlur");
+  feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+
+  // Create gradient
+  const gradient = defs.append("linearGradient")
+    .attr("id", `bar-gradient-${selector.replace('#', '')}`)
+    .attr("x1", "0%").attr("y1", "100%")
+    .attr("x2", "0%").attr("y2", "0%");
+  
+  gradient.append("stop")
+    .attr("offset", "0%")
+    .attr("style", `stop-color:${color};stop-opacity:0.3`);
+  
+  gradient.append("stop")
+    .attr("offset", "100%")
+    .attr("style", `stop-color:${color};stop-opacity:1`);
 
   svg
     .selectAll("rect")
@@ -126,8 +189,11 @@ const updateBars = (selector, values, color) => {
     .attr("y", (d) => y(d))
     .attr("width", x.bandwidth())
     .attr("height", (d) => height - y(d))
-    .attr("rx", 4)
-    .attr("fill", color);
+    .attr("rx", 3)
+    .attr("fill", `url(#bar-gradient-${selector.replace('#', '')})`)
+    .attr("stroke", color)
+    .attr("stroke-width", 1)
+    .attr("filter", `url(#bars-glow-${selector.replace('#', '')})`);
 };
 
 const updateServices = (services = []) => {
@@ -148,7 +214,10 @@ const updateServices = (services = []) => {
     status.textContent = service.ok
       ? `${service.latency_ms}ms`
       : "down";
-    status.style.color = service.ok ? "#1a7f7a" : "#c94b3f";
+    status.style.color = service.ok ? "#00ff88" : "#ff4444";
+    status.style.textShadow = service.ok 
+      ? "0 0 10px rgba(0, 255, 136, 0.5)" 
+      : "0 0 10px rgba(255, 68, 68, 0.5)";
     item.appendChild(name);
     item.appendChild(status);
     elements.serviceList.appendChild(item);
@@ -202,13 +271,13 @@ const render = (payload) => {
   pushValue(state.disk, diskUsage);
   pushValue(state.load, load["1m"] / 4);
 
-  updateSparkline("#cpu-spark", padSeries(state.cpu), "#f08b3e");
-  updateSparkline("#mem-spark", padSeries(state.mem), "#1a7f7a");
-  updateDonut("#disk-donut", diskUsage, "#2b4d66");
+  updateSparkline("#cpu-spark", padSeries(state.cpu), "#00d4ff");
+  updateSparkline("#mem-spark", padSeries(state.mem), "#00ff88");
+  updateDonut("#disk-donut", diskUsage, "#aa44ff");
   updateBars(
     "#load-bars",
     [load["1m"], load["5m"], load["15m"]],
-    "#5f5d7a"
+    "#ffaa00"
   );
 
   updateServices(payload.services);
