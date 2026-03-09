@@ -302,7 +302,7 @@ def activity_monitor():
 
 
 def main():
-    host = os.getenv("FRIDAY_HOST", "127.0.0.1")
+    host = os.getenv("FRIDAY_HOST", "0.0.0.0")  # Listen on all interfaces
     port = int(os.getenv("FRIDAY_PORT", "8765"))
     
     # Start activity monitoring thread
