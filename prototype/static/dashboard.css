@@ -65,7 +65,33 @@ body {
   position: relative;
 }
 
+/* Progressive padding reduction to allow tighter window sizing */
+@media (max-width: 600px) {
+  body {
+    padding: calc(var(--spacing) * 2);
+  }
+}
+
 @media (max-width: 500px) {
+  body {
+    padding: calc(var(--spacing));
+  }
+}
+
+@media (max-width: 450px) {
+  body {
+    padding: calc(var(--spacing) * 0.5);
+  }
+}
+
+@media (max-width: 420px) {
+  body {
+    padding: 2px;
+  }
+}
+
+/* Only go full-screen on very tiny screens */
+@media (max-width: 350px) {
   body {
     padding: 0;
     justify-content: center;
@@ -115,7 +141,8 @@ body::before {
   resize: horizontal;
 }
 
-@media (max-width: 500px) {
+/* Only remove border radius and fill on extremely small screens */
+@media (max-width: 350px) {
   .dock {
     width: 100vw;
     min-width: 100vw;
@@ -521,15 +548,10 @@ body::before {
 }
 
 /* Responsive Design */
-@media (max-width: 600px) and (min-width: 501px) {
-  body {
-    padding: calc(var(--spacing) * 2);
-    justify-content: center;
-  }
-
+@media (max-width: 480px) {
   .dock {
-    width: 100%;
-    min-width: 280px;
+    width: calc(100vw - 4px); /* Account for minimal body padding */
+    min-width: calc(100vw - 4px);
   }
 
   .grid {
@@ -537,14 +559,15 @@ body::before {
   }
 
   .dock__header {
-    flex-direction: column;
-    gap: calc(var(--spacing) * 2);
-    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 1.5);
+    align-items: center;
   }
 }
 
-/* Full window mode for very small screens */
-@media (max-width: 500px) {
+/* Full window mode only for extremely small screens */
+@media (max-width: 350px) {
   .grid {
     grid-template-columns: 1fr;
   }
