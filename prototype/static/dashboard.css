@@ -65,28 +65,10 @@ body {
   position: relative;
 }
 
-/* Progressive padding reduction to allow tighter window sizing */
-@media (max-width: 600px) {
-  body {
-    padding: calc(var(--spacing) * 2);
-  }
-}
-
+/* Much more aggressive padding reduction for tight window sizing */
 @media (max-width: 500px) {
   body {
-    padding: calc(var(--spacing));
-  }
-}
-
-@media (max-width: 450px) {
-  body {
-    padding: calc(var(--spacing) * 0.5);
-  }
-}
-
-@media (max-width: 420px) {
-  body {
-    padding: 2px;
+    padding: 1px;
   }
 }
 
@@ -123,9 +105,9 @@ body::before {
 
 /* Main Dashboard Container */
 .dock {
-  width: min(420px, 100vw);
-  min-width: 320px;
-  max-width: 95vw;
+  width: min(420px, calc(100vw - 2px));
+  min-width: 280px;
+  max-width: calc(100vw - 2px);
   background: var(--bg-overlay);
   border: 1px solid rgba(0, 212, 255, 0.2);
   border-radius: var(--radius-lg);
@@ -548,12 +530,7 @@ body::before {
 }
 
 /* Responsive Design */
-@media (max-width: 480px) {
-  .dock {
-    width: calc(100vw - 4px); /* Account for minimal body padding */
-    min-width: calc(100vw - 4px);
-  }
-
+@media (max-width: 400px) {
   .grid {
     grid-template-columns: 1fr;
   }
