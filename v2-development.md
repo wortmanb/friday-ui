@@ -11,16 +11,16 @@ Replace the unreliable cat avatar with a useful D3-based visualization dashboard
 
 ## D3 Dashboard Ideas
 1. **Minimal status widget** - Small corner indicator  
-2. **Homelab metrics** - ES health, k8s pods, system resources
+2. **Homelab metrics** - ES health, k8s pods, system resources (selected for prototype)
 3. **Interactive service map** - Network topology with health status
 4. **Git activity timeline** - Repository activity visualization
 5. **Calendar integration** - Meeting timeline with alerts
 
 ## Development Plan
-- [ ] Prototype minimal status widget
-- [ ] Define useful data sources
-- [ ] Design responsive layout
-- [ ] Implement real-time updates (reliable)
+- [x] Prototype homelab metrics widget
+- [x] Define useful data sources (CPU, memory, disk, load, service checks)
+- [x] Design responsive layout
+- [x] Implement real-time updates (polling with offline state)
 - [ ] User testing with Bret
 
 ## Technical Stack
